@@ -121,6 +121,10 @@ def main():
     elif currentUser.current.userType == "Instructor":
       instructorPage()
 
+  else:
+    clear()
+    main()
+
 
 # * SAMPLE DATA ####################################################################
 student1 = Student("stud1", "stud1", "idol@email.com", "Luis Tolentino", "2004-06-13", "Davao Del Sur", "Male")
