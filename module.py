@@ -3,4 +3,6 @@ class Module:
     self.moduleTitle = moduleTitle
     self.moduleDescription = moduleDescription
     self.moduleStatus = moduleStatus
-    self.quizzes = []
+    self.moduleQuiz = None # instance of Quiz class
+
+  

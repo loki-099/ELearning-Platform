@@ -29,15 +29,20 @@ class Enrollment:
   
   @staticmethod
   def displayStudentEnrolledRecords(studentID):
+    headers = ["Number", "Course Title", "Progress", "Pending Assignments", "Status"] 
     records = Enrollment.getEnrollmentRecords(studentID)
-    headers = ["Course Title", "Progress", "Pending Assignments", "Status"]
     datas = []
+    number = 1
     for record in records:
       curData = []
+      curData.append(number)
+      number += 1
       curData.append(record.enrolledCourse.courseTitle)
       curData.append(record.checkProgress())
       curData.append(len(record.assignments))
       curData.append("Completed" if record.completed == True else "Not Completed")
       datas.append(curData)
     print(tabulate(datas, headers=headers, tablefmt="rounded_grid"))
+    # return datas
 
+  

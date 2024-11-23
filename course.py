@@ -12,7 +12,7 @@ class Course:
     self.courseTotalStudents = 0
 
   @classmethod
-  def getCourses(cls):
+  def displayCourses(cls):
     headers = ["Number", "Course Title", "Description", "Intructor", "Total Modules", "Students Enrolled"]
     datas = []
     number = 1
@@ -63,5 +63,22 @@ class Course:
     headers = ["Title", "Description", "Instructor", "Modules", "Students"]
     datas = [[self.courseTitle, self.courseDescription, self.courseInstructor, self.displayModules(), self.courseTotalStudents]]
     print(tabulate(datas, headers=headers, tablefmt="rounded_grid"))
-    
+
+  def increaseTotalStudents(self):
+    self.courseTotalStudents += 1
+
+  def displayAllModules(self):
+    headers = ["Number", "Title", "Description", "Quiz Result", "Status"]
+    datas = []
+    number = 1
+    for module in self.courseModules:
+      curData = []
+      curData.append(number)
+      number += 1
+      curData.append(module.moduleTitle)
+      curData.append(module.moduleDescription)
+      curData.append("No Quiz" if module.moduleQuiz == None else "Not Taken")
+      curData.append(module.moduleStatus)
+      datas.append(curData)
+    print(tabulate(datas, headers=headers, tablefmt="rounded_grid"))
 

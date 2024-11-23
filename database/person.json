@@ -1,0 +1,22 @@
+[
+  {
+    "username": "stud1",
+    "password": "stud1",
+    "email": "idol@email.com",
+    "fullName": "Luis Tolentino",
+    "birthdate": "2004-06-13",
+    "address": "Davao del Sur",
+    "gender": "Male",
+    "userType": "Student"
+  },
+  {
+    "username": "stud2",
+    "password": "stud2",
+    "email": "idol2@email.com",
+    "fullName": "Jhon Tolentino",
+    "birthdate": "2004-06-13",
+    "address": "Davao del Sur",
+    "gender": "Male",
+    "userType": "Student"
+  }
+]

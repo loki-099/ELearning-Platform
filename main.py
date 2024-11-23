@@ -2,6 +2,8 @@ from person import Person, Student, Instructor
 from course import Course
 from module import Module
 from enrollment import Enrollment
+from quiz import Quiz
+from tabulate import tabulate
 from os import system, name
 
 def clear(): #* clearing terminals
@@ -28,9 +30,12 @@ def validateUser(username, password, userType):
 
 #* STUDENT PAGES: 
 
+def takeQuiz():
+  pass
+
 def viewCourses(): #* VIEWCOURSES PAGE
   print("COURSES AVAILABLE")
-  Course.getCourses()
+  Course.displayCourses()
   choice = input("1 - View Course Details\n0 - Back\n\nEnter choice: ")
 
   if choice == "1": #* VIEW COURSE DETAILS
@@ -42,10 +47,15 @@ def viewCourses(): #* VIEWCOURSES PAGE
     choice = input("1 - Enroll to Course\n0 - Back\n\nEnter choice: ")
 
     if choice == "1": #* ENROLL TO COURSE
-      newEnrollmentRecord = Enrollment(currentUser.current, course)
-      Enrollment.addToEnrollmentRecords(newEnrollmentRecord)
-      print("ENROLLED TO COURSE")
-      studentPage()
+      if any(record.enrolledCourse.courseTitle == course.courseTitle for record in Enrollment.getEnrollmentRecords(currentUser.current.studentID)):
+        print("Already Enrolled")
+        studentPage()
+      else:
+        newEnrollmentRecord = Enrollment(currentUser.current, course)
+        Enrollment.addToEnrollmentRecords(newEnrollmentRecord)
+        course.increaseTotalStudents()
+        print("ENROLLED TO COURSE")
+        studentPage()
     elif choice == "0": #* BACK TO VIEWCOURSES PAGE
       clear()
       viewCourses()
@@ -60,16 +70,22 @@ def viewEnrolledCourses(): #* VIEW ENROLLEDCOURSES PAGE
   choice = input("1 - View Modules\n0 - Back\n\nEnter choice: ")
 
   if choice == "1": #* VIEW MODULES
-    pass
+    index = int(input("Enter Course Number: ")) - 1
+    clear()
+    print("COURSE MODULES")
+    Enrollment.getEnrollmentRecords(currentUser.current.studentID)[index].enrolledCourse.displayAllModules()
+    choice = input("1 - Take Quiz\n0 - Back\n\nEnter choice: ")
+
+    if choice == "1":
+      takeQuiz()
+    elif choice == "0":
+      clear()
+      viewEnrolledCourses()
+
 
   elif choice == "0": #* BACK TO STUDENT PAGE
     clear()
     studentPage()
-
-
-
-
-
 
 
 
@@ -92,6 +108,8 @@ def studentPage():
     clear()
     main()
     
+
+
 
 
 def instructorPage():
@@ -143,7 +161,7 @@ Course.addToAllCourses(course2)
 
 module1 = Module("Module 1", "Yawa oy", "Not Done")
 course1.addCourseModules(module1)
-module2 = Module("Module 2", "Di na ko", "Done")
+module2 = Module("Module 2", "Di na ko", "Not Done")
 course1.addCourseModules(module2)
 
 main()
