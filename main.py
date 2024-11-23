@@ -16,8 +16,8 @@ def clear(): #* clearing terminals
 class currentUser:
   current = None
 
-global user
-user = currentUser.current
+global curUser
+curUser = currentUser.current
 
 
 
@@ -32,10 +32,10 @@ def validateUser(username, password, userType):
 #* STUDENT AND INSTRUCTOR PAGE #######################################################################################
 
 def studentPage():
-  print(f"Welcome, {user.fullName}")
+  print(f"Welcome, {curUser.fullName}")
 
 def instructorPage():
-  print(f"Welcome, {user.fullName}")
+  print(f"Welcome, {curUser.fullName}")
 
 #* ###################################################################################################################
 
@@ -47,17 +47,17 @@ def main():
     username = input("Enter username: ")
     password = input("Enter password: ")
     validateUser(username, password, "Student")
-    if user == None:
+    if curUser == None:
       main()
-    elif user.userType == "Student":
+    elif curUser.userType == "Student":
       studentPage()
   elif choice == "2": #* INSTRUCTOR LOGIN
     username = input("Enter username: ")
     password = input("Enter password: ")
     validateUser(username, password, "Instructor")
-    if user == None:
+    if curUser == None:
       main()
-    elif user.userType == "Instructor":
+    elif curUser.userType == "Instructor":
       instructorPage()
 
 
