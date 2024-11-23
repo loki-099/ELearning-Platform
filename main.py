@@ -11,31 +11,91 @@ def clear(): #* clearing terminals
   else: # for mac and linux
     _ = system('clear')
 
-
-
 class currentUser:
   current = None
 
-global curUser
-curUser = currentUser.current
-
-
+global currentStudent
+currentStudent = None  
 
 def validateUser(username, password, userType):
-  validatedUser = Person.validateUser(username, password, userType)
-  currentUser.current = validatedUser
-  if validatedUser == None:
+  currentUser.current = Person.validateUser(username, password, userType)
+  if currentUser.current == None:
     clear()
     print("NO USER FOUND")
 
 
 #* STUDENT AND INSTRUCTOR PAGE #######################################################################################
 
-def studentPage():
-  print(f"Welcome, {curUser.fullName}")
+#* STUDENT PAGES: 
+
+def viewCourses(): #* VIEWCOURSES PAGE
+  print("COURSES AVAILABLE")
+  Course.getCourses()
+  choice = input("1 - View Course Details\n0 - Back\n\nEnter choice: ")
+
+  if choice == "1": #* VIEW COURSE DETAILS
+    courseIndex = int(input("Enter Course Number: ")) - 1
+    clear()
+    print("COURSE DETAILS")
+    course = Course.allCourses[courseIndex]
+    course.displayCourseDetails()
+    choice = input("1 - Enroll to Course\n0 - Back\n\nEnter choice: ")
+
+    if choice == "1": #* ENROLL TO COURSE
+      newEnrollmentRecord = Enrollment(currentUser.current, course)
+      Enrollment.addToEnrollmentRecords(newEnrollmentRecord)
+      print("ENROLLED TO COURSE")
+      studentPage()
+    elif choice == "0": #* BACK TO VIEWCOURSES PAGE
+      clear()
+      viewCourses()
+    
+  elif choice == "0": #* BACK TO STUDENTPAGE
+    clear()
+    studentPage()
+
+def viewEnrolledCourses(): #* VIEW ENROLLEDCOURSES PAGE
+  print("ENROLLED COURSES")
+  Enrollment.displayStudentEnrolledRecords(currentUser.current.studentID)
+  choice = input("1 - View Modules\n0 - Back\n\nEnter choice: ")
+
+  if choice == "1": #* VIEW MODULES
+    pass
+
+  elif choice == "0": #* BACK TO STUDENT PAGE
+    clear()
+    studentPage()
+
+
+
+
+
+
+
+
+
+def studentPage(): 
+  currentStudent = currentUser.current
+  clear()
+  print(f"Welcome, {currentStudent.fullName}")
+  choice = input("1 - View Courses\n2 - View Enrolled Courses\n3 - View Assignments\n4 - View Schedules\n0 - LogOut\n\nEnter choice: ")
+
+  if choice == "1": #* VIEW COURSES
+    clear()
+    viewCourses()
+
+  elif choice == "2": #* VIEW ENROLLED COURSES
+    clear()
+    viewEnrolledCourses()
+
+  elif choice == "0": #* BACK TO MAIN
+    clear()
+    main()
+    
+
 
 def instructorPage():
-  print(f"Welcome, {curUser.fullName}")
+  print(f"Welcome, {currentUser.current.fullName}")
 
 #* ###################################################################################################################
 
@@ -47,17 +107,18 @@ def main():
     username = input("Enter username: ")
     password = input("Enter password: ")
     validateUser(username, password, "Student")
-    if curUser == None:
+    if currentUser.current == None:
       main()
-    elif curUser.userType == "Student":
+    elif currentUser.current.userType == "Student":
       studentPage()
+
   elif choice == "2": #* INSTRUCTOR LOGIN
     username = input("Enter username: ")
     password = input("Enter password: ")
     validateUser(username, password, "Instructor")
-    if curUser == None:
+    if currentUser.current == None:
       main()
-    elif curUser.userType == "Instructor":
+    elif currentUser.current.userType == "Instructor":
       instructorPage()
 
 
@@ -69,5 +130,16 @@ instructor = Instructor("inst1", "inst1", "inst@email.com", "Lloyd Tolentino", "
 Person.addToListOfUsers(student1)
 Person.addToListOfUsers(student2)
 Person.addToListOfUsers(instructor)
+
+course1 = Course("How To Become AI Coder", "AI Coder ampota")
+course2 = Course("Howt To Die Peacefully", "yawa nga case study")
+
+Course.addToAllCourses(course1)
+Course.addToAllCourses(course2)
+
+module1 = Module("Module 1", "Yawa oy", "Not Done")
+course1.addCourseModules(module1)
+module2 = Module("Module 2", "Di na ko", "Done")
+course1.addCourseModules(module2)
 
 main()

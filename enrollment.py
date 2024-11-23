@@ -1,4 +1,5 @@
 import copy
+from tabulate import tabulate
 
 class Enrollment:
   enrollmentRecords = []
@@ -12,7 +13,6 @@ class Enrollment:
     self.quizzes = []
 
   def checkProgress(self):
-    self.enrolledCourse.checkModulesProgress()
     return f"Completed: {self.enrolledCourse.checkModulesProgress()}/{len(self.enrolledCourse.courseModules)}"
   
   @classmethod
@@ -26,4 +26,18 @@ class Enrollment:
       if studentID == enrollmentRecord.enrolledStudent.studentID:
         records.append(enrollmentRecord)
     return records
+  
+  @staticmethod
+  def displayStudentEnrolledRecords(studentID):
+    records = Enrollment.getEnrollmentRecords(studentID)
+    headers = ["Course Title", "Progress", "Pending Assignments", "Status"]
+    datas = []
+    for record in records:
+      curData = []
+      curData.append(record.enrolledCourse.courseTitle)
+      curData.append(record.checkProgress())
+      curData.append(len(record.assignments))
+      curData.append("Completed" if record.completed == True else "Not Completed")
+      datas.append(curData)
+    print(tabulate(datas, headers=headers, tablefmt="rounded_grid"))
 

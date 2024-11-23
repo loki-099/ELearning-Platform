@@ -1,3 +1,5 @@
+from tabulate import tabulate
+
 class Course:
   allCourses = []
 
@@ -11,8 +13,20 @@ class Course:
 
   @classmethod
   def getCourses(cls):
+    headers = ["Number", "Course Title", "Description", "Intructor", "Total Modules", "Students Enrolled"]
+    datas = []
+    number = 1
     for course in cls.allCourses:
-      print(f"Course Title: {course.courseTitle}")
+      currentData = []
+      currentData.append(number)
+      number += 1
+      currentData.append(course.courseTitle)
+      currentData.append(course.courseDescription)
+      currentData.append(course.courseInstructor)
+      currentData.append(len(course.courseModules))
+      currentData.append(course.courseTotalStudents)
+      datas.append(currentData)
+    print(tabulate(datas, headers=headers, tablefmt="rounded_grid"))
 
   @classmethod
   def addToAllCourses(cls, course):
@@ -27,10 +41,16 @@ class Course:
   def addCourseModules(self, module):
     self.courseModules.append(module)
 
-  def displayModules(self):
+  def displayModuleStatus(self):
     print(f"Course: {self.courseTitle}")
     for module in self.courseModules:
       print(f"Module: {module.moduleTitle} | Status: {module.moduleStatus}")
+
+  def displayModules(self):
+    string = ""
+    for module in self.courseModules:
+      string += f"{module.moduleTitle}\n"
+    return string
 
   def checkModulesProgress(self):
     completed = 0
@@ -38,4 +58,10 @@ class Course:
       if module.moduleStatus == "Done":
         completed += 1
     return completed
+  
+  def displayCourseDetails(self):
+    headers = ["Title", "Description", "Instructor", "Modules", "Students"]
+    datas = [[self.courseTitle, self.courseDescription, self.courseInstructor, self.displayModules(), self.courseTotalStudents]]
+    print(tabulate(datas, headers=headers, tablefmt="rounded_grid"))
+    
 
