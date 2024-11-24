@@ -119,6 +119,7 @@ def instructorPage():
 
 
 def main():
+  print(Person.listOfUsers)
   choice = input("1 - Student LogIn\n2 - Instructor LogIn\n3 - Student Register\n4 - Instructor Register\n5 - Admin LogIn\n\nEnter choice: ")
 
   if choice == "1": #* STUDENT LOGIN
@@ -145,13 +146,14 @@ def main():
 
 
 # * SAMPLE DATA ####################################################################
-student1 = Student("stud1", "stud1", "idol@email.com", "Luis Tolentino", "2004-06-13", "Davao Del Sur", "Male")
-student2 = Student("stud2", "stud2", "idol@email.com", "Jhon Tolentino", "2004-06-13", "Davao Del Sur", "Male")
-instructor = Instructor("inst1", "inst1", "inst@email.com", "Lloyd Tolentino", "2004-06-12", "Purok 5", "Male")
+# student1 = Student("stud1", "stud1", "idol@email.com", "Luis Tolentino", "2004-06-13", "Davao Del Sur", "Male")
+# student2 = Student("stud2", "stud2", "idol@email.com", "Jhon Tolentino", "2004-06-13", "Davao Del Sur", "Male")
+# instructor = Instructor("inst1", "inst1", "inst@email.com", "Lloyd Tolentino", "2004-06-12", "Purok 5", "Male")
 
-Person.addToListOfUsers(student1)
-Person.addToListOfUsers(student2)
-Person.addToListOfUsers(instructor)
+# Person.addToListOfUsers(student1)
+# Person.addToListOfUsers(student2)
+# Person.addToListOfUsers(instructor)
+Person.updateData()
 
 course1 = Course("How To Become AI Coder", "AI Coder ampota")
 course2 = Course("Howt To Die Peacefully", "yawa nga case study")

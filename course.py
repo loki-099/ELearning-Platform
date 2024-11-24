@@ -1,4 +1,7 @@
 from tabulate import tabulate
+import json
+
+
 
 class Course:
   allCourses = []
