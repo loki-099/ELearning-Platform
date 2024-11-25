@@ -119,6 +119,13 @@ def instructorPage():
 
 
 def main():
+  all_users = Person.load_all_users()
+  for user_data in all_users:
+      if user_data[8] == "Student":
+          Person.addToListOfUsers(Student(*user_data[1:8]))
+      elif user_data[8] == "Instructor":
+          Person.addToListOfUsers(Instructor(*user_data[1:8]))
+
   print(Person.listOfUsers)
   choice = input("1 - Student LogIn\n2 - Instructor LogIn\n3 - Student Register\n4 - Instructor Register\n5 - Admin LogIn\n\nEnter choice: ")
 
@@ -153,7 +160,6 @@ def main():
 # Person.addToListOfUsers(student1)
 # Person.addToListOfUsers(student2)
 # Person.addToListOfUsers(instructor)
-Person.updateData()
 
 course1 = Course("How To Become AI Coder", "AI Coder ampota")
 course2 = Course("Howt To Die Peacefully", "yawa nga case study")

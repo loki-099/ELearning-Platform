@@ -1,36 +1,7 @@
 from abc import ABC, abstractmethod
 import random
 import string
-import json
-
-def loadData(filePath):
-    try:
-        with open(filePath, 'r') as file:
-            data = json.load(file)
-
-            # Convert to appropriate instances based on userType
-            # instances = []
-            for entry in data:
-                if entry["userType"] == "Student":
-                    # instances.append(Student.from_dict(entry))
-                    Person.addToListOfUsers(Student.from_dict(entry))
-                elif entry["userType"] == "Instructor":
-                    # instances.append(Instructor.from_dict(entry))
-                    Person.addToListOfUsers(Instructor.from_dict(entry))
-                else:
-                    print(f"Warning: Unknown userType '{entry['userType']}' for username '{entry['username']}'")
-            # return instances
-
-    except FileNotFoundError:
-        print("Error: File not found.")
-        return []
-    except json.JSONDecodeError:
-        print("Error: Invalid JSON format.")
-        return []
-    
-def addPersonToData(instance):
-  pass
-
+import sqlite3
 
 class Person(ABC):
   listOfUsers = []
@@ -55,6 +26,17 @@ class Person(ABC):
       if username == user.username and password == user.password and userType == user.userType:
         return user
     return None
+  
+  @classmethod
+  def load_all_users(cls):
+      connection = sqlite3.connect('database.db')
+      cursor = connection.cursor()
+
+      cursor.execute('SELECT * FROM Person')
+      rows = cursor.fetchall()
+
+      connection.close()
+      return rows
 
   @abstractmethod
   def getDetails(self):
@@ -70,25 +52,6 @@ class Person(ABC):
     random_id = ''.join(random.choices(characters, k=5))
     return random_id
   
-  @staticmethod
-  def from_dict(data):
-    return Person(
-      data["username"],
-      data["password"],
-      data["email"],
-      data["fullName"],
-      data["birthdate"],
-      data["address"],
-      data["gender"],
-      data["userType"]
-    )
-  
-  @classmethod
-  def updateData(cls):
-    loadData('./database/person.json')
-    
-  
-  
   def getAge(self):
     pass
 
@@ -99,7 +62,6 @@ class Student(Person):
   def __init__(self, username, password, email, fullName, birthdate, address, gender):
     super().__init__(username, password, email, fullName, birthdate, address, gender, Student.getUserType())
     self.studentID = Person.generateID()
-    self.enrolledCourses = []
     self.earnedCertificates = []
     self.assignments = []
 
@@ -138,19 +100,6 @@ class Instructor(Person):
   @classmethod
   def getUserType(cls):
     return cls.userType
-  
-  @staticmethod
-  def from_dict(data):
-      return Instructor(
-          data["username"],
-          data["password"],
-          data["email"],
-          data["fullName"],
-          data["birthdate"],
-          data["address"],
-          data["gender"]
-      )
-
   
   def getDetails(self):
     pass
