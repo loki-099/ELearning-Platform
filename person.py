@@ -41,6 +41,13 @@ class Student(Person):
     return cls.userType
   
   @staticmethod
+  def registerToDB(username, password, fullName, email, gender, birthDate, address):
+    query = "INSERT INTO Student (username, password, fullName, email, gender, birthDate, address) VALUES (?,?,?,?,?,?,?)"
+    params = (username, password, fullName, email, gender, birthDate, address)
+    db.execute_query(query, params)
+    db.close()
+  
+  @staticmethod
   def validateStudent(username, password):
     query = f"SELECT * FROM Student WHERE username = ? AND password = ?"
     params = (username, password)

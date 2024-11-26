@@ -77,6 +77,13 @@ class Course:
       datas.append(currentData)
     print(tabulate(datas, headers=headers, tablefmt="rounded_grid"))
 
+  @staticmethod
+  def getAllModules(courseID):
+    query = "SELECT * FROM Module WHERE courseID = ?"
+    params = (courseID)
+    result = db.execute_query(query, params)
+    db.close()
+    return result
 
 
 

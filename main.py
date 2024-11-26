@@ -3,6 +3,7 @@ from course import Course
 from module import Module
 from enrollment import Enrollment
 from quiz import Quiz
+from assignment import Assignment
 from tabulate import tabulate
 from os import system, name
 
@@ -30,8 +31,20 @@ def validateUser(username, password, userType):
 
 #* STUDENT PAGES: 
 
-def takeQuiz():
-  pass
+def takeQuiz(moduleToQuiz, enrollmentRecordID): #* TAKE QUIZ PAGE
+  moduleID = moduleToQuiz
+  isPass = Quiz.doQuiz(moduleID)
+  if isPass:
+    Module.updateModuleStatus(enrollmentRecordID, moduleID)
+    clear()
+    viewEnrolledCourses()
+  else:
+    print("Pass the Quiz to Complete this Module!")
+    input("Enter any key to back: ")  
+    clear()
+    viewEnrolledCourses()
+  
+  
 
 def viewCourses(): #* VIEWCOURSES PAGE
   print("COURSES AVAILABLE")
@@ -47,13 +60,13 @@ def viewCourses(): #* VIEWCOURSES PAGE
     choice = input("1 - Enroll to Course\n0 - Back\n\nEnter choice: ")
 
     if choice == "1": #* ENROLL TO COURSE
-      if any(record.enrolledCourse.courseTitle == course.courseTitle for record in Enrollment.getEnrollmentRecords(currentUser.current.studentID)):
+      Enrollment.addToEnrollmentRecords(Enrollment.getEnrollmentRecordByStudentID(currentUser.current.id))
+      if any(record.courseID == course.courseID for record in Enrollment.enrollmentRecords):
+        clear()
         print("Already Enrolled")
-        studentPage()
+        viewCourses()
       else:
-        newEnrollmentRecord = Enrollment(currentUser.current, course)
-        Enrollment.addToEnrollmentRecords(newEnrollmentRecord)
-        course.increaseTotalStudents()
+        Enrollment.enrollToCourse(currentUser.current.id, course.courseID)
         print("ENROLLED TO COURSE")
         studentPage()
     elif choice == "0": #* BACK TO VIEWCOURSES PAGE
@@ -73,11 +86,21 @@ def viewEnrolledCourses(): #* VIEW ENROLLEDCOURSES PAGE
     index = int(input("Enter Course Number: ")) - 1
     clear()
     print("COURSE MODULES")
+    enrollmentRecordID = Enrollment.enrollmentRecords[index].enrollmentID
     Enrollment.enrollmentRecords[index].displayModulesStatus()
     choice = input("1 - Take Quiz\n0 - Back\n\nEnter choice: ")
 
-    if choice == "1":
-      takeQuiz()
+    if choice == "1": #* TAKE QUIZ
+      modules = Enrollment.enrollmentRecords[index].getModules()
+      index = int(input("Enter Module Number: ")) - 1
+      moduleStatus = Enrollment.getModuleStatus(modules[index][1])
+      if not moduleStatus[3] == "Done":
+        clear()
+        takeQuiz(modules[index][0], enrollmentRecordID)
+      else:
+        clear()
+        print("Already took a quiz!")
+        viewEnrolledCourses()
     elif choice == "0":
       clear()
       viewEnrolledCourses()
@@ -88,13 +111,27 @@ def viewEnrolledCourses(): #* VIEW ENROLLEDCOURSES PAGE
     studentPage()
 
 
+def viewAssignments(): #* VIEW ASSIGNMENTS PAGE
+  Assignment.displayAssignments(currentUser.current.id)
+  choice = input("1 - Submit Assignment\n0 - Back\n\nEnter choice: ")
+
+  if choice == "1":
+    enrollmentID = int(input("Enter Assignment Number: "))
+    Assignment.submitAssignment(enrollmentID)
+    clear()
+    print("Assignment Submitted")
+    viewAssignments()
+  elif choice == "0":
+    clear()
+    studentPage()
+
+
 
 
 def studentPage(): 
   currentStudent = currentUser.current
-  clear()
   print(f"Welcome, {currentStudent.fullName}")
-  choice = input("1 - View Courses\n2 - View Enrolled Courses\n3 - View Assignments\n4 - View Schedules\n0 - LogOut\n\nEnter choice: ")
+  choice = input("1 - View Courses\n2 - View Enrolled Courses\n3 - View Assignments\n4 - View Schedules\n5 - View Grades\n0 - LogOut\n\nEnter choice: ")
 
   if choice == "1": #* VIEW COURSES
     clear()
@@ -103,6 +140,10 @@ def studentPage():
   elif choice == "2": #* VIEW ENROLLED COURSES
     clear()
     viewEnrolledCourses()
+
+  elif choice == "3": #* VIEW ASSIGNMENTS
+    clear()
+    viewAssignments()
 
   elif choice == "0": #* BACK TO MAIN
     clear()
@@ -127,9 +168,11 @@ def main():
     result = Student.validateStudent(username, password)
     if not result:
       clear()
+      print("NO USER FOUND")
       main()
     elif result:
       currentUser.current = Student(*result)
+      clear()
       studentPage()
 
   elif choice == "2": #* INSTRUCTOR LOGIN
@@ -140,6 +183,24 @@ def main():
       main()
     elif currentUser.current.userType == "Instructor":
       instructorPage()
+
+  elif choice == "3": #* STUDENT REGISTER
+    print("STUDENT REGISTER")
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    fullName = input("Enter Full Name: ")
+    while True:
+      email = input("Enter email: ")
+      if Person.validateEmail(email):
+        break
+      print("Invalid Email Format. Try again!")
+    gender = input("Enter gender: ")
+    birthDate = input("Enter birthdate('yyyy-mm-dd'): ")
+    address = input("Enter address: ")
+    Student.registerToDB(username, password, fullName, email, gender, birthDate, address)
+    main()
+
+
 
   else:
     clear()

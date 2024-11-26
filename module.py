@@ -17,5 +17,11 @@ class Module:
     result = db.execute_query(query, params)
     db.close()
     return result
+  
+  @staticmethod
+  def updateModuleStatus(enrollmentID, moduleID):
+    query = "UPDATE ModuleStatus SET moduleStatus = ? WHERE enrollmentID = ? AND moduleID = ?"
+    params = ("Done", enrollmentID, moduleID)
+    db.execute_query(query, params)
 
 
