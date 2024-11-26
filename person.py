@@ -1,30 +1,20 @@
 from abc import ABC, abstractmethod
-import random
-import string
+from database import Database
+from config import DB_CONFIG
+
+db = Database(**DB_CONFIG)
 
 class Person(ABC):
-  listOfUsers = []
 
-  def __init__(self, username, password, email, fullName, birthdate, address, gender, userType):
+  def __init__(self, id, username, password, fullName, email, gender, birthDate, address):
+    self.id = id
     self.username = username
     self.password = password
     self.email = email
     self.fullName = fullName
-    self.birthdate = birthdate
+    self.birthDate = birthDate
     self.address = address
     self.gender = gender
-    self.userType = userType
-
-  @classmethod
-  def addToListOfUsers(cls, user):
-    cls.listOfUsers.append(user)
-
-  @classmethod
-  def validateUser(cls, username, password, userType):
-    for user in cls.listOfUsers:
-      if username == user.username and password == user.password and userType == user.userType:
-        return user
-    return None
 
   @abstractmethod
   def getDetails(self):
@@ -34,22 +24,14 @@ class Person(ABC):
   def validateEmail(email):
     return True if "@" in email else False
   
-  @staticmethod
-  def generateID():
-    characters = string.ascii_letters + string.digits
-    random_id = ''.join(random.choices(characters, k=5))
-    return random_id
-  
   def getAge(self):
     pass
 
 
 class Student(Person):
   userType = "Student"
-
-  def __init__(self, username, password, email, fullName, birthdate, address, gender):
-    super().__init__(username, password, email, fullName, birthdate, address, gender, Student.getUserType())
-    self.studentID = Person.generateID()
+  def __init__(self, id, username, password, fullName, email, gender, birthDate, address):
+    super().__init__(id, username, password, fullName, email, gender, birthDate, address)
     self.enrolledCourses = []
     self.earnedCertificates = []
     self.assignments = []
@@ -58,6 +40,14 @@ class Student(Person):
   def getUserType(cls):
     return cls.userType
   
+  @staticmethod
+  def validateStudent(username, password):
+    query = f"SELECT * FROM Student WHERE username = ? AND password = ?"
+    params = (username, password)
+    result = db.execute_query(query, params, False)
+    db.close()
+    return result
+
   def getDetails(self):
     pass
 
@@ -68,9 +58,8 @@ class Student(Person):
 class Instructor(Person):
   userType = "Instructor"
 
-  def __init__(self, username, password, email, fullName, birthdate, address, gender):
-    super().__init__(username, password, email, fullName, birthdate, address, gender, Instructor.getUserType())
-    self.instructorID = Person.generateID()
+  def __init__(self, id, username, password, fullName, email, gender, birthDate, address):
+    super().__init__(id, username, password, fullName, email, gender, birthDate, address)
     self.offeredCourses = []
     self.credentials = []
 
