@@ -40,5 +40,22 @@ class Assignment:
         params = ("Submitted", enrollmentID)
         db.execute_query(query, params)
         db.close()
+
+
+    @staticmethod
+    def displayAssignmentStatus(courseID):
+        print("")
+        results = db.execute_query("SELECT Student.fullName, Course.courseTitle, Assignment.assignmentTitle, Enrollment.assignmentStatus FROM Enrollment JOIN Student ON Student.studentID = Enrollment.studentID JOIN Course ON Course.courseID = Enrollment.courseID JOIN Assignment ON Assignment.assignmentID = Enrollment.assignmentID WHERE Enrollment.courseID = ?", (courseID))
+        header = ["Student Name", "Course Title", "Assignment Title", "Status"]
+        datas = []
+        for result in results:
+            curData = []
+            curData.append(result[0])
+            curData.append(result[1])
+            curData.append(result[2])
+            curData.append(result[3])
+            datas.append(curData)
+        print(tabulate(datas, header, tablefmt="rounded_grid"))
+
             
         

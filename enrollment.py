@@ -65,8 +65,25 @@ class Enrollment:
       datas.append(curData)
     print(tabulate(datas, headers=headers, tablefmt="rounded_grid"))
 
+  @staticmethod
+  def checkNewlyAddModule(courseID, enrollmentID):
+    modules = db.execute_query("SELECT * FROM Module WHERE courseID = ?", (courseID))
+    moduleStatus = db.execute_query("SELECT moduleID FROM ModuleStatus WHERE enrollmentID = ?", (enrollmentID))
+    moduleIDs = []
+    for moduleStat in moduleStatus:
+      moduleIDs.append(moduleStat[0])
+    db.close()
+    for module in modules:
+      print(moduleIDs)
+      if not module[0] in moduleIDs:
+        print("NO MODULE")
+        db.execute_query("INSERT INTO ModuleStatus (enrollmentID, moduleID, moduleStatus) VALUES (?,?,?)", (enrollmentID, module.moduleID, "Not Done"))
+        db.close()
+
+
   #* MODULE TITLE | MODULE DESCRIPTION | STATUS 
   def displayModulesStatus(self):
+    Enrollment.checkNewlyAddModule(self.courseID, self.enrollmentID)
     query = "SELECT Module.moduleTitle, Module.moduleDescription, ModuleStatus.moduleStatus FROM ModuleStatus JOIN Module ON ModuleStatus.moduleID = Module.moduleID WHERE enrollmentID = ?"
     params = (self.enrollmentID)
     results = db.execute_query(query,params)
@@ -127,8 +144,8 @@ class Enrollment:
   @staticmethod
   def enrollToCourse(studentID, courseID):
     assignmentID = Enrollment.getAssignmentIDByCourseID(courseID)
-    query = "INSERT INTO Enrollment (studentID, courseID, enrollDate, status, assignmentID, assignmentStatus) OUTPUT INSERTED.enrollmentID, INSERTED.courseID VALUES (?,?,GETDATE(),?,?,?)"
-    params = (studentID, courseID, "Not Complete", assignmentID, "Not Submitted")
+    query = "INSERT INTO Enrollment (studentID, courseID, enrollDate, status, assignmentID, assignmentStatus, grade) OUTPUT INSERTED.enrollmentID, INSERTED.courseID VALUES (?,?,GETDATE(),?,?,?,?)"
+    params = (studentID, courseID, "Not Complete", assignmentID, "Not Submitted", 0)
     result = db.execute_query(query, params, False)
     print(result)
     Enrollment.increaseStudentsEnrolled(courseID)
@@ -143,9 +160,27 @@ class Enrollment:
     db.close()
 
 
+  @staticmethod
+  def displayStudents(courseID):
+    results = db.execute_query("SELECT Student.studentID, Student.fullName, Course.courseTitle, Enrollment.enrollDate, Enrollment.status, Enrollment.assignmentStatus, Enrollment.grade FROM Enrollment JOIN Student ON Student.studentID = Enrollment.studentID JOIN Course ON Course.courseID = Enrollment.courseID WHERE Enrollment.courseID = ?", (courseID))
+    header = ["Student ID", "Student Name", "Course", "Enrolled Date", "Status", "Assignment", "Grade"]
+    datas = []
+    for result in results:
+      curData = []
+      curData.append(result[0])
+      curData.append(result[1])
+      curData.append(result[2])
+      curData.append(result[3])
+      curData.append(result[4])
+      curData.append(result[5])
+      curData.append("No Grade" if result[6] == 0 else result[6])
+      datas.append(curData)
+    print(tabulate(datas, header, tablefmt="rounded_grid"))
 
 
-Enrollment.updateEnrollmentStatus(1)
+
+
+
 
     
 

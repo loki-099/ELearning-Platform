@@ -70,6 +70,14 @@ class Instructor(Person):
     self.offeredCourses = []
     self.credentials = []
 
+  @staticmethod
+  def validateInstructor(username, password):
+    query = f"SELECT * FROM Instructor WHERE username = ? AND password = ?"
+    params = (username, password)
+    result = db.execute_query(query, params, False)
+    db.close()
+    return result
+
   @classmethod
   def getUserType(cls):
     return cls.userType

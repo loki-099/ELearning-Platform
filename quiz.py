@@ -1,3 +1,5 @@
+from question import Question
+
 from database import Database
 from config import DB_CONFIG
 
@@ -35,6 +37,25 @@ class Quiz:
         score += 1
     print("Your Score:", score)
     return True if score >= quiz[3] else False
+  
+  @staticmethod
+  def getQuizCount(moduleID):
+    count = db.execute_query("SELECT COUNT(*) FROM Quiz WHERE moduleID = ?", (moduleID), False)
+    db.close()
+    return count[0]
+  
+  @staticmethod
+  def createQuiz(moduleID):
+    totalItems = int(input("Enter Total Items: "))
+    passingScore = int(input("Enter Passing Score: "))
+    result = db.execute_query("INSERT INTO Quiz (moduleID, totalItems, passingScore) OUTPUT INSERTED.quizID VALUES (?,?,?)", (moduleID, totalItems, passingScore), False)
+    print(result[0])
+    Question.createQuestions(result[0], totalItems)
+    
+    
+
+
+
 
     
 

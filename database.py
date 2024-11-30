@@ -42,11 +42,19 @@ class Database:
             else:
                 cursor.execute(query)
             
-            # Handle OUTPUT clauses or SELECT queries
-            if query.strip().lower().startswith("select") or "output" in query.lower():
-                return cursor.fetchall() if fetch_all else cursor.fetchone()
+            query_lower = query.strip().lower()
+            
+            # Handle queries with OUTPUT or SELECT
+            if query_lower.startswith("select") or "output" in query_lower:
+                if fetch_all:
+                    return cursor.fetchall()
+                else:
+                    result = cursor.fetchone()
+                    if result is None:
+                        print("Query executed but no rows were returned.")
+                    return result
             else:
-                # For other queries (INSERT, UPDATE, DELETE without OUTPUT)
+                # For non-SELECT queries (e.g., INSERT/UPDATE/DELETE without OUTPUT)
                 self.connection.commit()
                 return cursor.rowcount  # Rows affected
         except Exception as e:
@@ -54,6 +62,7 @@ class Database:
             return None
         finally:
             cursor.close()
+
 
 
     def close(self):

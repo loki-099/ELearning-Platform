@@ -22,13 +22,6 @@ class currentUser:
 global currentStudent
 currentStudent = None  
 
-def validateUser(username, password, userType):
-  currentUser.current = Person.validateUser(username, password, userType)
-  if currentUser.current == None:
-    clear()
-    print("NO USER FOUND")
-
-
 #* STUDENT AND INSTRUCTOR PAGE #######################################################################################
 
 #* STUDENT PAGES: 
@@ -72,6 +65,7 @@ def viewCourses(): #* VIEWCOURSES PAGE
         viewCourses()
       else:
         Enrollment.enrollToCourse(currentUser.current.id, course.courseID)
+        clear()
         print("ENROLLED TO COURSE")
         studentPage()
     elif choice == "0": #* BACK TO VIEWCOURSES PAGE
@@ -173,12 +167,161 @@ def studentPage():
     clear()
     main()
     
+#* #####################################################################################################################
+
+#* INSTRUCTOR PAGE
+
+def viewCoursesInstructor(): #* VIEW COURSES PAGE
+  print("COURSES AVAILABLE")
+  Course.displayCourses()
+  choice = input("1 - View Course Details\n0 - Back\n\nEnter choice: ")
+
+  if choice == "1": #* VIEW COURSE DETAILS
+    courseIndex = int(input("Enter Course Number: ")) - 1
+    clear()
+    print("COURSE DETAILS")
+    course = Course.allCourses[courseIndex]
+    course.displayCourseDetails()
+    choice = input("1 - Apply as Instructor\n0 - Back\n\nEnter choice: ")
+
+    if choice == "1": #* APPLY AS INTRUCTOR
+      if any(record.courseID == course.courseID for record in Course.instructorCourses):
+        clear()
+        print("Already applied as Instructor")
+        viewCoursesInstructor()
+      else:
+        Course.applyToCourse(course.courseID, currentUser.current.id)
+        clear()
+        print("APPLIED TO COURSE")
+        instructorPage()
+
+    elif choice == "0":
+      clear()
+      viewCoursesInstructor()
+
+  elif choice == "0": #* BACK TO INSTRUCTOR PAGE
+    clear()
+    instructorPage()
+
+def viewModules(courseIndex): #* VIEW MODULES PAGE
+  Course.displayAllModules(courseIndex)
+  choice = input("1 - Add Module\n2 - Create Quiz\n0 - Back\n\nEnter your choice: ")
+  courseID = Course.instructorCourses[courseIndex].courseID
+
+  if choice == "1": #* ADD MODULE
+    Module.addModule(courseID)
+    clear()
+    print("MODULE ADDED")
+    instructorPage()
+
+  if choice == "2": #* ADD QUIZ
+    moduleID = int(input("Enter Module Number: "))
+    Quiz.createQuiz(moduleID)
+    # clear()
+    print("QUIZ CREATED")
+    instructorPage()
+
+  elif choice == "0": #* BACK TO INSTRUCTING COURSES
+    clear()
+    viewInstructingCourses()
+
+def viewAssignmentsInstructor(courseIndex):
+  courseID = Course.instructorCourses[courseIndex].courseID
+  Assignment.displayAssignmentStatus(courseID)
+  choice = input("0 - Back\n\nEnter your choice: ")
+
+  if choice == "1":
+    pass
+
+  elif choice == "0":
+    clear()
+    viewInstructingCourses()
+
+
+def viewSchedules(courseIndex):
+  courseID = Course.instructorCourses[courseIndex].courseID
+  Schedule.displayInstructedCourseSchedules(courseID)
+  choice = input("1 - Add Schedule\n0 - Back\n\nEnter choice: ")
+
+  if choice == "1": 
+    Schedule.addSchedule(courseID)
+    clear()
+    print("SCHEDULE ADDED")
+    viewInstructingCourses()
+
+  elif choice == "0":
+    clear()
+    viewInstructingCourses()
+
+
+def viewStudents(courseIndex):
+  courseID = Course.instructorCourses[courseIndex].courseID
+  Enrollment.displayStudents(courseID)
+  choice = input("1 - Give Grade\n0 - Back\n\nEnter choice: ")
+
+  if choice == "1":
+    studentID = int(input("Enter Student ID: "))
+    Grade.giveGrade(courseID, studentID)
+    clear()
+    print("GRADE GIVEN")
+    viewInstructingCourses()
+
+  elif choice == "0":
+    clear()
+    viewInstructingCourses()
+
+
+def viewInstructingCourses(): #* VIEW INSTRUCTING COURSES PAGE  
+  print("INSTRUCTING COURSES")
+  Course.displayInstructingCourses()
+  choice = input("1 - View Modules\n2 - View Assignments\n3 - View Schedules\n4 - View Students\n0 - Back\n\nEnter choice: ")
+
+  if choice == "1": #* VIEW MODULES PAGE
+    courseIndex = int(input("Enter Course Number: ")) - 1
+    clear()
+    viewModules(courseIndex)
+
+  elif choice == "2": #* VIEW ASSIGNMENTS PAGE
+    courseIndex = int(input("Enter Course Number: ")) - 1
+    clear()
+    viewAssignmentsInstructor(courseIndex)
+
+  elif choice == "3": #* VIEW SCHEDULES PAGE
+    courseIndex = int(input("Enter Course Number: ")) - 1
+    clear()
+    viewSchedules(courseIndex)
+
+  elif choice == "4": #* VIEW STUDENTS PAGE
+    courseIndex = int(input("Enter Course Number: ")) - 1
+    clear()
+    viewStudents(courseIndex)
+
+  elif choice == "0": #* BACK TO INSTRUCTOR PAGE
+    clear()
+    instructorPage()
 
 
 
 
 def instructorPage():
+  Course.instructorCourses = []
+  Course.addToInstructorCourses(Course.getCourseByInstructorID(currentUser.current.id))
   print(f"Welcome, {currentUser.current.fullName}")
+  choice = input("1 - View Courses\n2 - View Courses Instructing\n3 - View Grades\n0 - LogOut\n\nEnter choice: ")
+
+  if choice == "1": #* VIEW COURSES
+    clear()
+    viewCoursesInstructor()
+
+  elif choice == "2": #* VIEW INSTRUCTING COURSES
+    clear()
+    viewInstructingCourses()
+
+  elif choice == "0": #* BACK TO MAIN
+    clear()
+    main()
+
+
 
 #* ###################################################################################################################
 
@@ -202,10 +345,14 @@ def main():
   elif choice == "2": #* INSTRUCTOR LOGIN
     username = input("Enter username: ")
     password = input("Enter password: ")
-    validateUser(username, password, "Instructor")
-    if currentUser.current == None:
+    result = Instructor.validateInstructor(username, password)
+    if not result:
+      clear()
+      print("NO USER FOUND")
       main()
-    elif currentUser.current.userType == "Instructor":
+    elif result:
+      currentUser.current = Instructor(*result)
+      clear()
       instructorPage()
 
   elif choice == "3": #* STUDENT REGISTER

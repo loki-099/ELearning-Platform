@@ -45,5 +45,27 @@ class Schedule:
         print(tabulate(datas, header, tablefmt="rounded_grid"))
 
 
+    @staticmethod
+    def displayInstructedCourseSchedules(courseID):
+        results = db.execute_query("SELECT Course.courseTitle, Schedule.scheduleTitle, Schedule.schedule FROM Schedule JOIN Course ON Course.courseID = Schedule.courseID WHERE Schedule.courseID = ?", (courseID))
+        db.close()
+        header = ["Course Title", "Schedule Title", "Schedule"]
+        datas = []
+        for result in results:
+            curData = []
+            curData.append(result[0])
+            curData.append(result[1])
+            curData.append(result[2])
+            datas.append(curData)
+        print(tabulate(datas, header, tablefmt="rounded_grid"))
+
+    @staticmethod
+    def addSchedule(courseID):
+        scheduleTitle = input("Enter Schedule Title: ")
+        schedule = input("Enter Schedule(YYYY-MM-DD HH:MM:SS): ")
+        db.execute_query("INSERT INTO Schedule (courseID, schedule, scheduleTitle) VALUES (?,?,?)", (courseID, schedule, scheduleTitle))
+        db.close()
+
+
 
 
