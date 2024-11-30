@@ -4,6 +4,8 @@ from module import Module
 from enrollment import Enrollment
 from quiz import Quiz
 from assignment import Assignment
+from schedule import Schedule
+from grade import Grade
 from tabulate import tabulate
 from os import system, name
 
@@ -36,6 +38,9 @@ def takeQuiz(moduleToQuiz, enrollmentRecordID): #* TAKE QUIZ PAGE
   isPass = Quiz.doQuiz(moduleID)
   if isPass:
     Module.updateModuleStatus(enrollmentRecordID, moduleID)
+    Enrollment.updateEnrollmentStatus(enrollmentRecordID)
+    print("You passed the Quiz! Congrats lods!")
+    input("Enter any key to back: ") 
     clear()
     viewEnrolledCourses()
   else:
@@ -113,6 +118,7 @@ def viewEnrolledCourses(): #* VIEW ENROLLEDCOURSES PAGE
 
 def viewAssignments(): #* VIEW ASSIGNMENTS PAGE
   Assignment.displayAssignments(currentUser.current.id)
+  print("ASSIGNMENTS")
   choice = input("1 - Submit Assignment\n0 - Back\n\nEnter choice: ")
 
   if choice == "1":
@@ -129,6 +135,8 @@ def viewAssignments(): #* VIEW ASSIGNMENTS PAGE
 
 
 def studentPage(): 
+  Enrollment.enrollmentRecords = []
+  Enrollment.addToEnrollmentRecords(Enrollment.getEnrollmentRecordByStudentID(currentUser.current.id))
   currentStudent = currentUser.current
   print(f"Welcome, {currentStudent.fullName}")
   choice = input("1 - View Courses\n2 - View Enrolled Courses\n3 - View Assignments\n4 - View Schedules\n5 - View Grades\n0 - LogOut\n\nEnter choice: ")
@@ -144,6 +152,22 @@ def studentPage():
   elif choice == "3": #* VIEW ASSIGNMENTS
     clear()
     viewAssignments()
+
+  elif choice == "4": #* VIEW SCHEDULES
+    clear()
+    print("SCHEDULES")
+    Schedule.displaySchedules()
+    input("Enter any key to back: ")
+    clear()
+    studentPage()
+
+  elif choice == "5": #* VIEW GRADES
+    clear()
+    print("GRADES")
+    Grade.displayGrades()
+    input("Enter any key to back: ")
+    clear()
+    studentPage()
 
   elif choice == "0": #* BACK TO MAIN
     clear()

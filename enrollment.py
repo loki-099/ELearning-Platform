@@ -8,7 +8,7 @@ db = Database(**DB_CONFIG)
 class Enrollment:
   enrollmentRecords = []
 
-  def __init__(self, enrollmentID, studentID, courseID, enrollDate, status, assignmentID, assignmentStatus):
+  def __init__(self, enrollmentID, studentID, courseID, enrollDate, status, assignmentID, assignmentStatus, grade):
     self.enrollmentID = enrollmentID
     self.studentID = studentID
     self.courseID = courseID
@@ -16,6 +16,7 @@ class Enrollment:
     self.status = status
     self.assignmentID = assignmentID
     self.assignmentStatus = assignmentStatus
+    self.grade = grade
 
   @staticmethod
   def getEnrollmentRecordByStudentID(studentID):
@@ -133,6 +134,19 @@ class Enrollment:
     Enrollment.increaseStudentsEnrolled(courseID)
     Enrollment.insertIntoModuleStatus(result[0], result[1])
     # Enrollment.insertIntoModuleStatus(18, )
+
+  @staticmethod
+  def updateEnrollmentStatus(enrollmentID):
+    numberOfRecords = db.execute_query("SELECT COUNT(*) FROM ModuleStatus WHERE enrollmentID = ? AND moduleStatus = ?", (enrollmentID, "Not Done"), False)
+    if numberOfRecords[0] == 0:
+      db.execute_query("UPDATE Enrollment SET status = ? WHERE enrollmentID = ?", ("Complete", enrollmentID))
+    db.close()
+
+
+
+
+Enrollment.updateEnrollmentStatus(1)
+
     
 
 
