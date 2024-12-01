@@ -77,6 +77,13 @@ class Instructor(Person):
     result = db.execute_query(query, params, False)
     db.close()
     return result
+  
+  @staticmethod
+  def registerToDB(username, password, fullName, email, gender, birthDate, address):
+    query = "INSERT INTO Instructor (username, password, fullName, email, gender, birthDate, address) VALUES (?,?,?,?,?,?,?)"
+    params = (username, password, fullName, email, gender, birthDate, address)
+    db.execute_query(query, params)
+    db.close()
 
   @classmethod
   def getUserType(cls):

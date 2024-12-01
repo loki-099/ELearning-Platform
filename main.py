@@ -6,6 +6,7 @@ from quiz import Quiz
 from assignment import Assignment
 from schedule import Schedule
 from grade import Grade
+from platformadmin import PlatformAdmin
 from tabulate import tabulate
 from os import system, name
 
@@ -111,8 +112,8 @@ def viewEnrolledCourses(): #* VIEW ENROLLEDCOURSES PAGE
 
 
 def viewAssignments(): #* VIEW ASSIGNMENTS PAGE
-  Assignment.displayAssignments(currentUser.current.id)
   print("ASSIGNMENTS")
+  Assignment.displayAssignments(currentUser.current.id)
   choice = input("1 - Submit Assignment\n0 - Back\n\nEnter choice: ")
 
   if choice == "1":
@@ -307,7 +308,7 @@ def instructorPage():
   Course.instructorCourses = []
   Course.addToInstructorCourses(Course.getCourseByInstructorID(currentUser.current.id))
   print(f"Welcome, {currentUser.current.fullName}")
-  choice = input("1 - View Courses\n2 - View Courses Instructing\n3 - View Grades\n0 - LogOut\n\nEnter choice: ")
+  choice = input("1 - View Courses\n2 - View Courses Instructing\n0 - LogOut\n\nEnter choice: ")
 
   if choice == "1": #* VIEW COURSES
     clear()
@@ -320,6 +321,98 @@ def instructorPage():
   elif choice == "0": #* BACK TO MAIN
     clear()
     main()
+
+#* ###################################################################################################################
+
+#* ADMIN PAGE
+
+def viewCoursesAdmin(): #* ADMIN VIEW COURSES PAGE
+  admin = currentUser.current
+  admin.displayAllCourses()
+  choice = input("1 - Add Course\n2 - Remove Course\n0 - Back\n\nEnter choice: ")
+
+  if choice == "1":
+    admin.addCourse()
+    clear()
+    print("COURSE ADDED")
+    viewCoursesAdmin()
+
+  elif choice == "2":
+    courseID = int(input("Enter Course ID: "))
+    confirmation = input("All Records will be Deleted, are you sure?(y/n): ")
+    if confirmation.lower() == "y":
+      admin.removeCourse(courseID)
+      clear()
+      print("ALL RECORDS ARE DELETED")
+      viewCoursesAdmin()
+    else:
+      clear()
+      print("CANCELLED")
+      viewCoursesAdmin()
+
+  elif choice == "0":
+    clear()
+    adminPage()
+
+def viewUsers():
+  admin = currentUser.current
+  choice = input("1 - View Students\n2 - View Instructors\n0 - Back\n\nEnter choice: ")
+
+  if choice == "1": #* VIEW STUDENTS
+    clear()
+    admin.displayAllUsers(choice)
+    choice = input("1 - Remove Student\n0 - Back\n\nEnter choice: ")
+    
+    if choice == "1":
+      studentID = int(input("Enter Student ID: "))
+      admin.removeStudent(studentID)
+      clear()
+      print("STUDENT REMOVED")
+      viewUsers()
+
+    elif choice == "0":
+      clear()
+      viewUsers()
+
+  elif choice == "2": #* VIEW INSTRUCTORS
+    clear()
+    admin.displayAllUsers(choice)
+    choice = input("1 - Remove Instructor\n0 - Back\n\nEnter choice: ")
+    
+    if choice == "1":
+      instructorID = int(input("Enter Instructor ID: "))
+      admin.removeInstructor(instructorID)
+      clear()
+      print("INSTRUCTOR REMOVED")
+      viewUsers()
+
+    elif choice == "0":
+      clear()
+      viewUsers()
+    
+
+  elif choice == "0":
+    clear()
+    adminPage()
+
+
+
+def adminPage(): #* ADMIN PAGE
+  print("WELCOME, ADMIN")
+  choice = input("1 - View Courses\n2 - View Users\n0 - LogOut\n\nEnter choice: ")
+
+  if choice == "1": #* ADMIN VIEW COURSES
+    clear()
+    viewCoursesAdmin()
+
+  elif choice == "2":
+    clear()
+    viewUsers()
+
+  elif choice == "0":
+    clear()
+    main()
+  
 
 
 
@@ -371,7 +464,35 @@ def main():
     Student.registerToDB(username, password, fullName, email, gender, birthDate, address)
     main()
 
+  elif choice == "4": #* INSTRUCTOR REGISTER
+    print("INSTRUCTOR REGISTER")
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    fullName = input("Enter Full Name: ")
+    while True:
+      email = input("Enter email: ")
+      if Person.validateEmail(email):
+        break
+      print("Invalid Email Format. Try again!")
+    gender = input("Enter gender: ")
+    birthDate = input("Enter birthdate('yyyy-mm-dd'): ")
+    address = input("Enter address: ")
+    Instructor.registerToDB(username, password, fullName, email, gender, birthDate, address)
+    main()
 
+  elif choice == "5": #* ADMIN LOGIN
+    print("ADMIN LOGIN")
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    result = PlatformAdmin.validateAdmin(username, password)
+    if not result:
+      clear()
+      print("INVALID CREDENTIALS")
+      main()
+    elif result:
+      currentUser.current = PlatformAdmin(*result)
+      clear()
+      adminPage()
 
   else:
     clear()

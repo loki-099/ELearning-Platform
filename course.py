@@ -51,11 +51,14 @@ class Course:
   
   @staticmethod
   def getInstructorNameByID(instructorID):
-    query = "SELECT * FROM Instructor WHERE instructorID = ?"
-    params = (instructorID)
-    result = db.execute_query(query, params, False)
-    db.close()
-    return result[3]
+    if instructorID == None:
+      return "No Instructor"
+    else:
+      query = "SELECT * FROM Instructor WHERE instructorID = ?"
+      params = (instructorID)
+      result = db.execute_query(query, params, False)
+      db.close()
+      return result[3]
 
   def displayCourseDetails(self):
     headers = ["Title", "Description", "Instructor", "Modules", "Students"]
