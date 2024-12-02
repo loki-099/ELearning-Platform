@@ -61,11 +61,7 @@ class Quiz:
       answer = input(f"Enter Answer: ")
       print("INSERTING QUESTION...")
       Question.createQuestion(quizID, question, answer)
-    
 
-
-
-    # Question.createQuestions(result[0], totalItems)
     
     
 
