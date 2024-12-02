@@ -26,7 +26,7 @@ class Quiz:
     params = (moduleID)
     quiz = db.execute_query(query, params, False)
     db.close()
-    questions = Quiz.getQuestions(quiz[1])
+    questions = Quiz.getQuestions(quiz[0]) #* HERE
     print(f"QUIZ / Total Items: {quiz[2]} / Passing Score: {quiz[3]}")
     number = 1
     for question in questions:
@@ -48,9 +48,24 @@ class Quiz:
   def createQuiz(moduleID):
     totalItems = int(input("Enter Total Items: "))
     passingScore = int(input("Enter Passing Score: "))
-    result = db.execute_query("INSERT INTO Quiz (moduleID, totalItems, passingScore) OUTPUT INSERTED.quizID VALUES (?,?,?)", (moduleID, totalItems, passingScore), False)
-    print(result[0])
-    Question.createQuestions(result[0], totalItems)
+    query = "INSERT INTO Quiz (moduleID, totalItems, passingScore) OUTPUT INSERTED.* VALUES (?,?,?)"
+    params = (moduleID, totalItems, passingScore)
+    result = db.execute_query(query, params, False)
+    db.connection.commit()
+    db.close()
+    quizID = result[0]
+    print("QUIZ ID:", quizID)
+
+    for i in range(totalItems):
+      question = input(f"Enter Question #{i + 1}: ")
+      answer = input(f"Enter Answer: ")
+      print("INSERTING QUESTION...")
+      Question.createQuestion(quizID, question, answer)
+    
+
+
+
+    # Question.createQuestions(result[0], totalItems)
     
     
 
