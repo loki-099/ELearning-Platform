@@ -17,5 +17,18 @@ class Module:
     result = db.execute_query(query, params)
     db.close()
     return result
+  
+  @staticmethod
+  def updateModuleStatus(enrollmentID, moduleID):
+    query = "UPDATE ModuleStatus SET moduleStatus = ? WHERE enrollmentID = ? AND moduleID = ?"
+    params = ("Done", enrollmentID, moduleID)
+    db.execute_query(query, params)
+
+  @staticmethod
+  def addModule(courseID):
+    moduleTitle = input("Enter Module Title: ")
+    moduleDescription = input("Enter Module Description: ")
+    db.execute_query("INSERT INTO Module (courseID, moduleTitle, moduleDescription) VALUES (?,?,?)", (courseID, moduleTitle, moduleDescription))
+    db.close()
 
 

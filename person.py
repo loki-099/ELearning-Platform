@@ -41,6 +41,13 @@ class Student(Person):
     return cls.userType
   
   @staticmethod
+  def registerToDB(username, password, fullName, email, gender, birthDate, address):
+    query = "INSERT INTO Student (username, password, fullName, email, gender, birthDate, address) VALUES (?,?,?,?,?,?,?)"
+    params = (username, password, fullName, email, gender, birthDate, address)
+    db.execute_query(query, params)
+    db.close()
+  
+  @staticmethod
   def validateStudent(username, password):
     query = f"SELECT * FROM Student WHERE username = ? AND password = ?"
     params = (username, password)
@@ -62,6 +69,21 @@ class Instructor(Person):
     super().__init__(id, username, password, fullName, email, gender, birthDate, address)
     self.offeredCourses = []
     self.credentials = []
+
+  @staticmethod
+  def validateInstructor(username, password):
+    query = f"SELECT * FROM Instructor WHERE username = ? AND password = ?"
+    params = (username, password)
+    result = db.execute_query(query, params, False)
+    db.close()
+    return result
+  
+  @staticmethod
+  def registerToDB(username, password, fullName, email, gender, birthDate, address):
+    query = "INSERT INTO Instructor (username, password, fullName, email, gender, birthDate, address) VALUES (?,?,?,?,?,?,?)"
+    params = (username, password, fullName, email, gender, birthDate, address)
+    db.execute_query(query, params)
+    db.close()
 
   @classmethod
   def getUserType(cls):
