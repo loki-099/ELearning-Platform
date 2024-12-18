@@ -499,24 +499,4 @@ def main():
     main()
 
 
-# * SAMPLE DATA ####################################################################
-# student1 = Student("stud1", "stud1", "idol@email.com", "Luis Tolentino", "2004-06-13", "Davao Del Sur", "Male")
-# student2 = Student("stud2", "stud2", "idol@email.com", "Jhon Tolentino", "2004-06-13", "Davao Del Sur", "Male")
-# instructor = Instructor("inst1", "inst1", "inst@email.com", "Lloyd Tolentino", "2004-06-12", "Purok 5", "Male")
-
-# Person.addToListOfUsers(student1)
-# Person.addToListOfUsers(student2)
-# Person.addToListOfUsers(instructor)
-
-# course1 = Course("How To Become AI Coder", "AI Coder ampota")
-# course2 = Course("Howt To Die Peacefully", "yawa nga case study")
-
-# Course.addToAllCourses(course1)
-# Course.addToAllCourses(course2)
-
-# module1 = Module("Module 1", "Yawa oy", "Not Done")
-# course1.addCourseModules(module1)
-# module2 = Module("Module 2", "Di na ko", "Not Done")
-# course1.addCourseModules(module2)
-
 main()

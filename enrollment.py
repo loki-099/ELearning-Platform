@@ -74,7 +74,6 @@ class Enrollment:
       moduleIDs.append(moduleStat[0])
     db.close()
     for module in modules:
-      print(moduleIDs)
       if not module[0] in moduleIDs:
         print("NO MODULE")
         db.execute_query("INSERT INTO ModuleStatus (enrollmentID, moduleID, moduleStatus) VALUES (?,?,?)", (enrollmentID, module.moduleID, "Not Done"))
